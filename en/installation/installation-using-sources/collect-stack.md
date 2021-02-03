@@ -28,7 +28,7 @@ To build Centreon Clib, you will need the following external dependencies:
 | C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
 | CMake                       | cmake                               | Read the build script and prepare sources for compilation |
 
-<!--Debian / Ubuntu / Raspbian-->
+<!--Debian / Raspbian-->
 
 | Software                    | Package name               | Description                                                |
 |-----------------------------|----------------------------|------------------------------------------------------------|
@@ -60,7 +60,7 @@ yum install gcc gcc-c++ make cmake3 pkgconfig
 dnf install gcc gcc-c++ make cmake pkgconf-pkg-config
 ```
 
-<!--Debian / Ubuntu / Raspbian-->
+<!--Debian / Raspbian-->
 
 ```shell
 apt-get install build-essential cmake pkg-config
@@ -132,7 +132,23 @@ Here's the list of variables available and their description:
 | `WITH_STATIC_LIB`       | Create or not a static library.                                                                                                   | `Off`                          |
 | `WITH_TESTING`          | Build unit test.                                                                                                                  | `Off`                          |
 
-Recommended command:
+Recommended command for you distribution:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=Off \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_LIB=/usr/lib \
+    -DWITH_TESTING=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
+```
+
+<!--CentOS 8-->
 
 ```shell
 cmake \
@@ -143,6 +159,32 @@ cmake \
     -DWITH_TESTING=On \
     -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
 ```
+
+<!--Debian / Raspbian-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=On \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_LIB=/usr/lib \
+    -DWITH_TESTING=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
+```
+
+<!--openSUSE-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=On \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_LIB=/usr/lib \
+    -DWITH_TESTING=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 At this step, the software will check for existence and usability of the
 prerequisites. If one cannot be found, an appropriate error message will
@@ -222,7 +264,7 @@ dependencies:
 | CMake                       | cmake                               | Read the build script and prepare sources for compilation |
 | Centreon Clib               | centreon-clib-devel                 | Core library used by Centreon                             |
 
-<!--Debian / Ubuntu / Raspbian-->
+<!--Debian / Raspbian-->
 
 | Software                    | Package name               | Description                                                |
 |-----------------------------|----------------------------|------------------------------------------------------------|
@@ -256,7 +298,7 @@ yum install gcc gcc-c++ make cmake3 pkgconfig
 dnf install gcc gcc-c++ make cmake pkgconf-pkg-config
 ```
 
-<!--Debian / Ubuntu / Raspbian-->
+<!--Debian / Raspbian-->
 
 ```shell
 apt-get install build-essential cmake pkg-config
@@ -347,14 +389,19 @@ Here's the list of variables available and their description:
 | `WITH_USER`                      | Set the user for Centreon Engine installation.                                                                                      | `root`                                   |
 | `WITH_VAR_DIR`                   | Define specific directory for temporary Centreon Engine files.                                                                      | `${WITH_PREFIX}/var`                     |
 
-Recommended command:
+Recommended command for you distribution:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
 
 ```shell
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=Off \
     -DWITH_CREATE_FILES=On \
-    -DWITH_LOGROTATE_SCRIPT=On \
     -DWITH_GROUP=centreon-engine \
+    -DWITH_LOGROTATE_SCRIPT=On \
     -DWITH_PKGCONFIG_SCRIPT=On \
     -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
     -DWITH_PREFIX=/usr \
@@ -368,6 +415,77 @@ cmake \
     -DWITH_USER=centreon-engine \
     -DWITH_VAR_DIR=/var/log/centreon-engine ..
 ```
+
+<!--CentOS 8-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=On \
+    -DWITH_CREATE_FILES=On \
+    -DWITH_GROUP=centreon-engine \
+    -DWITH_LOGROTATE_SCRIPT=On \
+    -DWITH_PKGCONFIG_SCRIPT=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BIN=/usr/sbin \
+    -DWITH_PREFIX_CONF=/etc/centreon-engine \
+    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
+    -DWITH_SAMPLE_CONFIG=Off \
+    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
+    -DWITH_STARTUP_SCRIPT=systemd \
+    -DWITH_TESTING=On \
+    -DWITH_USER=centreon-engine \
+    -DWITH_VAR_DIR=/var/log/centreon-engine ..
+```
+
+<!--Debian / Raspbian-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=On \
+    -DWITH_CREATE_FILES=On \
+    -DWITH_GROUP=centreon-engine \
+    -DWITH_LOGROTATE_SCRIPT=On \
+    -DWITH_PKGCONFIG_SCRIPT=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BIN=/usr/sbin \
+    -DWITH_PREFIX_CONF=/etc/centreon-engine \
+    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
+    -DWITH_SAMPLE_CONFIG=Off \
+    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
+    -DWITH_STARTUP_SCRIPT=systemd \
+    -DWITH_TESTING=On \
+    -DWITH_USER=centreon-engine \
+    -DWITH_VAR_DIR=/var/log/centreon-engine ..
+```
+
+<!--openSUSE-->
+
+```shell
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=On \
+    -DWITH_CREATE_FILES=On \
+    -DWITH_GROUP=centreon-engine \
+    -DWITH_LOGROTATE_SCRIPT=On \
+    -DWITH_PKGCONFIG_SCRIPT=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BIN=/usr/sbin \
+    -DWITH_PREFIX_CONF=/etc/centreon-engine \
+    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
+    -DWITH_SAMPLE_CONFIG=Off \
+    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
+    -DWITH_STARTUP_SCRIPT=systemd \
+    -DWITH_TESTING=On \
+    -DWITH_USER=centreon-engine \
+    -DWITH_VAR_DIR=/var/log/centreon-engine ..
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 At this step, the software will check for existence and usability of the
 rerequisites. If one cannot be found, an appropriate error message will

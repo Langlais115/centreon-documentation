@@ -1,21 +1,26 @@
 ---
-id: using-sources
-title: Using sources
+id: central-platform
+title: Central Platform
 ---
+
+> Most RHEL / CentOS / Oracle Linux users will find easier to install
+> Centreon Web by [using packages](using-packages.html).
 
 ## Prerequisites
 
-> Most CentOS users will find easier to install Centreon Web by [using packages](using-packages.html).
-
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Redhat/CentOS-->
-To install Centreon you will need to set up the official software collections repository supported by Redhat.
 
-> Software collections are required for installing PHP 7 and associated libraries (Centreon requirement).
+<!--CentOS-->
+
+To install Centreon you will need to set up the official software
+collections repository supported by Redhat.
+
+> Software collections are required for installing PHP 7 and associated
+> libraries (Centreon requirement).
 
 Install the software collections repository using this command:
 
-``` shell
+```shell
 yum install -y centos-release-scl
 ```
 
@@ -23,7 +28,7 @@ The repository is now installed.
 
 You can now install the necessary prerequisites:
 
-``` shell
+```shell
 yum update
 yum install -y \
     rh-php72 \
@@ -70,21 +75,21 @@ yum install -y \
 
 Additional commands are necessary to configure the environment correctly:
 
-``` shell
+```shell
 usermod -U apache
 /opt/rh/rh-php72/root/bin/pear channel-update pear.php.net
 ```
 
-If you can’t access the Internet directly but have to pass via a proxy,
+If you can't access the Internet directly but have to pass via a proxy,
 perform the following command:
 
-``` shell
+```shell
 /opt/rh/rh-php72/root/bin/pear config-set http_proxy http://my_proxy.com:port
 ```
 
 Then execute:
 
-``` shell
+```shell
 /opt/rh/rh-php72/root/bin/pear upgrade-all
 ```
 <!--Debian Stretch / Ubuntu 18.04-->
@@ -92,7 +97,7 @@ Add the php 7.2 repository:
 
 ### For Debian Stretch
 
-``` shell
+```shell
 apt-get install wget apt-transport-https lsb-release ca-certificates
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/php.list
@@ -103,7 +108,7 @@ apt-get update
 
 > It is necessary to add sudo in front of the following commands:
 >
-> ``` shell
+> ```shell
 > $ apt-get install software-properties-common
 > $ add-apt-repository ppa:ondrej/php
 > $ apt update
@@ -111,7 +116,7 @@ apt-get update
 
 Install the following prerequisites:
 
-``` shell
+```shell
 apt-get install \
     php7.2 \
     php7.2-opcache \
@@ -147,7 +152,7 @@ apt-get install \
 
 Activate the modules:
 
-``` shell
+```shell
 a2enmod proxy_fcgi setenvif proxy rewrite
 a2enconf php7.2-fpm
 a2dismod php7.2
@@ -156,7 +161,7 @@ systemctl restart apache2 php7.2-fpm
 
 Additional commands are necessary to configure the environment correctly:
 
-``` shell
+```shell
 groupadd -g 6000 centreon
 useradd -u 6000 -g centreon -m -r -d /var/lib/centreon -c "Centreon Admin" -s /bin/sh centreon
 ```
@@ -166,27 +171,27 @@ Debian. To add them, change the /etc/apt/sources.list file and add the *non-free
 
 Execute the following commands:
 
-``` shell
+```shell
 apt-get update
 apt-get install snmp-mibs-downloader
 ```
 
 Then modify the SNMP configuration file */etc/default/snmpd* by adding:
 
-``` shell
+```shell
 export MIBDIRS=/usr/share/snmp/mibs
 export MIBS=ALL
 ```
 
 And commenting:
 
-``` shell
+```shell
 #mibs ALL
 ```
 
 Restart SNMP service:
 
-``` shell
+```shell
 service snmpd restart
 service snmptrapd restart
 ```
@@ -194,7 +199,7 @@ service snmptrapd restart
 <!--Suse-->
 Install the following prerequisites:
 
-``` shell
+```shell
 yast -i gcc \
     gcc-c++ \
     make \
@@ -239,41 +244,43 @@ yast -i gcc \
 On some OpenSuse distributions, the default settings of the **mine** type are not valid to function with the Centreon
 web interface. Edit the */etc/mime.types* file and find the lines:
 
-``` shell
+```shell
 text/x-xsl xsl
 text/x-xslt xslt xsl
 ```
 
 Replace them by:
 
-``` shell
+```shell
 text/xml xsl
 text/xml xslt xsl
 ```
 
 Save the file and restart Apache:
 
-``` shell
+```shell
 /etc/init.d/apache2 restart
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-## Monitoring engine (Centreon Engine)
+## Collect stack
 
-You can install it following the procedure in documentation. Don’t forget to install the
+### Centreon Engine
+
+You can install it following the procedure in documentation. Don't forget to install the
 [Nagios plugins](http://nagios.sourceforge.net/docs/3_0/quickstart.html) if you have not already done so.
 
-## Stream Multiplexer (Centreon Broker)
+### Centreon Broker
 
 Install this Stream Multiplexers before continuing with the installation.
 
-## Centreon
+## Web interface
 
 Download the latest version of Centreon [here](https://download.centreon.com).
 
 Extract the Centreon archive:
 
-``` shell
+```shell
 tar zxf centreon-web-YY.MM.x.tar.gz
 cd centreon-web-YY.MM.x
 ```
@@ -283,7 +290,7 @@ quick yes/no questions can be replied to by [y] most of the time.
 >
 > If centreon sources have been downloaded from github, run those commands:
 >
-> ``` shell
+> ```shell
 > composer install --no-dev --optimize-autoloader
 > npm install
 > npm run build
@@ -291,7 +298,7 @@ quick yes/no questions can be replied to by [y] most of the time.
 
 Run the installation script:
 
-``` shell
+```shell
 ./install.sh -i
 ```
 
@@ -301,7 +308,7 @@ Run the installation script:
 > no problem during this stage. Otherwise repeat the Prerequisites installation
 > process:
 
-``` shell
+```shell
 ###############################################################################
 #                                                                             #
 #                         Centreon (www.centreon.com)                         #
@@ -342,7 +349,7 @@ Is the Gorgone module already installed?
 
 ### License agreement
 
-``` shell
+```shell
 This General Public License does not permit incorporating your program into
 proprietary programs.  If your program is a subroutine library, you may
 consider it more useful to permit linking proprietary applications with the
@@ -358,7 +365,7 @@ Do you accept GPLv2 license ?
 
 Answer **[y]** to all the questions:
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Please choose what you want to install
 ------------------------------------------------------------------------
@@ -378,7 +385,7 @@ Do you want to install : CentreonTrapd process
 
 ### Definition of installation paths
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Start CentWeb Installation
 ------------------------------------------------------------------------
@@ -445,7 +452,7 @@ Finding Apache group :                                     www-data
 Le groupe d'applications **centreon** est utilisé pour les droits d'accès
 entre les différents logiciels de la suite Centreon:
 
-``` shell
+```shell
 What is the Centreon group ? [centreon]
 default to [centreon]
 >
@@ -459,7 +466,7 @@ default to [centreon]
 
 This is the user used to run the monitoring engine (Centreon Engine).
 
-``` shell
+```shell
 What is the Monitoring engine user ? [centreon-engine]
 default to [centreon-engine]
 >
@@ -467,7 +474,7 @@ default to [centreon-engine]
 
 This is the user used to run the stream broker (Centreon Broker).
 
-``` shell
+```shell
 What is your Centreon Broker user ? [centreon-broker]
 default to [centreon-broker]
 >
@@ -475,7 +482,7 @@ default to [centreon-broker]
 
 ### Monitoring logs directory
 
-``` shell
+```shell
 What is the Monitoring engine log directory ?[/var/log/centreon-engine]
 default to [/var/log/centreon-engine]
 >
@@ -490,7 +497,7 @@ Add group www-data to user centreon                        OK
 
 ### Sudo configuration
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Configure Sudo
 ------------------------------------------------------------------------
@@ -529,7 +536,7 @@ Configuring Sudo                                           OK
 
 ### Apache configuration
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Configure Apache server
 ------------------------------------------------------------------------
@@ -548,7 +555,7 @@ Reloading Apache service                                   OK
 
 ### PHP FPM configuration
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Configure PHP FPM service
 ------------------------------------------------------------------------
@@ -618,7 +625,7 @@ Centreon Web Perl lib installed                            OK
 
 ### Pear module installation
 
-``` shell
+```shell
 ------------------------------------------------------------------------
 Pear Modules
 ------------------------------------------------------------------------
@@ -631,7 +638,7 @@ All PEAR modules                                           OK
 
 ### Configuration file installation
 
-``` shell
+```shell
 ------------------------------------------------------------------------
             Centreon Post Install
 ------------------------------------------------------------------------
@@ -641,7 +648,7 @@ Create /etc/centreon/instCentWeb.conf                      OK
 
 ### Performance data component (Centstorage) installation
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Starting CentStorage Installation
 ------------------------------------------------------------------------
@@ -679,7 +686,7 @@ Create /etc/centreon/instCentStorage.conf                  OK
 
 ### Plugin installation
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Starting Centreon Plugins Installation
 ------------------------------------------------------------------------
@@ -699,7 +706,7 @@ Create /etc/centreon/instCentPlugins.conf                  OK
 
 ### Centreon SNMP trap management installation
 
-``` shell
+```shell
 ------------------------------------------------------------------------
         Starting CentreonTrapD Installation
 ------------------------------------------------------------------------
@@ -743,7 +750,7 @@ Create /etc/centreon/instCentPlugins.conf                  OK
 
 #### End
 
-``` shell
+```shell
 ###############################################################################
 #                                                                             #
 #                         Thanks for using Centreon.                          #
@@ -777,7 +784,7 @@ First, you need to install PHP dependency installer **composer**. Composer can b
 Once composer is installed, go to the centreon directory (usually **/usr/share/centreon/**) and run the following
 command:
 
-``` shell
+```shell
 composer install --no-dev --optimize-autoloader
 ```
 
@@ -788,13 +795,13 @@ First, you need to install javascript runtime **nodejs**. Installation instructi
 
 Once nodejs is installed, copy the JSON files to the installation folder:
 
-``` shell
+```shell
 cp /usr/local/src/centreon-web-YY.MM.x/package* /usr/share/centreon/
 ```
 
 Then go to the centreon directory (usually **/usr/share/centreon/**) and run the following commands:
 
-``` shell
+```shell
 npm install
 npm run build
 rm -rf node_modules
@@ -805,7 +812,7 @@ rm -rf node_modules
 SELinux should be disabled; for this, you have to modify the file **/etc/sysconfig/selinux**
 and replace **enforcing** by **disabled**:
 
-``` shell
+```shell
 SELINUX=disabled
 ```
 
@@ -814,7 +821,7 @@ After saving the file, please reboot your operating system to apply the changes.
 Timezone and mandatory PHP parameters have to be set: go to `/etc/php/7.2/cli/conf.d` or `/etc/php/7.2/apache2/conf.d`
 directory and create a file named `centreon.ini` which contains the following lines:
 
-``` shell
+```shell
 date.timezone = Europe/Paris
 max_execution_time = 300
 session.use_strict_mode = 1

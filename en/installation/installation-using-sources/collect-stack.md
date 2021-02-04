@@ -78,26 +78,29 @@ zypper install gcc gcc-c++ make cmake pkg-config
 
 #### Get sources
 
-Centreon Clib can be checked out from GitHub at
-<https://github.com/centreon/centreon-clib>. On a Linux box with
-git installed this is just a matter of:
+Centreon Clib can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-clib)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
 
 ```shell
 git clone -b x.y.z https://github.com/centreon/centreon-clib
 ```
 
-With x.y.z being the targeted version you want to compile.
-
-Or you can get the latest Centreon Clib's sources from its
-[download website](https://download.centreon.com/). Once downloaded,
-extract it:
+<!--Download website-->
 
 ```shell
 wget http://files.download.centreon.com/public/centreon-clib/centreon-clib-x.y.z.tar.gz
 tar xzf centreon-clib-x.y.z.tar.gz
 ```
 
-With x.y.z being the downloaded version you want to compile.
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
 
 #### Configuration
 
@@ -346,26 +349,29 @@ Follow the [above procedure](#centreon-clib) to install Centreon Clib.
 
 #### Get sources
 
-Centreon Engine can be checked out from GitHub at
-<https://github.com/centreon/centreon-engine>. On a Linux box with
-git installed this is just a matter of:
+Centreon Engine can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-engine)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
 
 ```shell
 git clone -b x.y.z https://github.com/centreon/centreon-engine
 ```
 
-With x.y.z being the targeted version you want to compile.
-
-Or you can get the latest Centreon Engine's sources from its
-[download website](https://download.centreon.com/). Once downloaded,
-extract it:
+<!--Download website-->
 
 ```shell
 wget http://files.download.centreon.com/public/centreon-engine/centreon-engine-x.y.z.tar.gz
 tar xzf centreon-engine-x.y.z.tar.gz
 ```
 
-With x.y.z being the downloaded version you want to compile.
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
 
 #### Configuration
 
@@ -381,13 +387,13 @@ Install the C++ dependencies using Conan:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--GCC > 5-->
+<!--GCC > 5.0-->
 
 ```shell
 conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
 ```
 
-<!--GCC < 5-->
+<!--GCC < 5.0-->
 
 ```shell
 conan install --remote centreon --build missing ..
@@ -730,26 +736,29 @@ conan remote add centreon https://api.bintray.com/conan/centreon/centreon
 
 #### Get sources
 
-Centreon Broker can be checked out from GitHub at
-<https://github.com/centreon/centreon-broker>. On a Linux box with
-git installed this is just a matter of:
+Centreon Broker can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-broker)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
 
 ```shell
 git clone -b x.y.z https://github.com/centreon/centreon-broker
 ```
 
-With x.y.z being the targeted version you want to compile.
-
-Or you can get the latest Centreon Broker's sources from its
-[download website](https://download.centreon.com/). Once downloaded,
-extract it:
+<!--Download website-->
 
 ```shell
 wget http://files.download.centreon.com/public/centreon-broker/centreon-broker-x.y.z.tar.gz
 tar xzf centreon-broker-x.y.z.tar.gz
 ```
 
-With x.y.z being the downloaded version you want to compile.
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
 
 #### Configuration
 
@@ -765,13 +774,13 @@ Install the C++ dependencies using Conan:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--GCC > 5-->
+<!--GCC > 5.0-->
 
 ```shell
 conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
 ```
 
-<!--GCC < 5-->
+<!--GCC < 5.0-->
 
 ```shell
 conan install --remote centreon --build missing ..
@@ -979,3 +988,391 @@ some of the following files.
 | `${WITH_PREFIX_MODULES}/70-lua.so`         | Lua module.                 |
 | `${WITH_PREFIX_MODULES}/70-rrd.so`         | RRD module.                 |
 | `${WITH_PREFIX_MODULES}/80-sql.so`         | SQL module.                 |
+
+## Centreon Connectors
+
+### Prerequisites
+
+To build Centreon Perl and SSH Connectors, you will need the following
+external dependencies:
+
+- a C++ compilation environment,
+- CMake 3, a cross-platform build system,
+- pip and Conan, package managers for Python and C/C++,
+- Perl, the Perl interpreter and core modules,
+- SSH2 development files, to use SSH functions,
+- Libgcrypt development files, a cryptographic library.
+- Centreon Clib, the Centreon core library.
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+| Software                    | Package name               | Description                                               |
+|-----------------------------|----------------------------|-----------------------------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconfig | Mandatory tools to compile                                |
+| CMake                       | cmake3                     | Read the build script and prepare sources for compilation |
+| pip                         | python-pip                 | Package manager for Python                                |
+| Conan                       | conan                      | Package manager for C/C++                                 |
+| Perl                        | perl                       | Perl interpreter and core modules                         |
+| SSH2                        | libssh2-devel              | SSH2 library development files                            |
+| Libgcrypt                   | libgcrypt-devel            | Libgcrypt development files                               |
+
+<!--CentOS 8-->
+
+| Software                    | Package name                        | Description                                               |
+|-----------------------------|-------------------------------------|-----------------------------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
+| CMake                       | cmake                               | Read the build script and prepare sources for compilation |
+| pip                         | python3-pip                         | Package manager for Python                                |
+| Conan                       | conan                               | Package manager for C/C++                                 |
+| Perl                        | perl                                | Perl interpreter and core modules                         |
+| SSH2                        | libssh2-devel                       | SSH2 library development files                            |
+| Libgcrypt                   | libgcrypt-devel                     | Libgcrypt development files                               |
+
+<!--Debian / Raspbian-->
+
+| Software                    | Package name               | Description                                                |
+|-----------------------------|----------------------------|------------------------------------------------------------|
+| C++ compilation environment | build-essential pkg-config | Mandatory tools to compile.                                |
+| CMake                       | cmake                      | Read the build script and prepare sources for compilation. |
+| pip                         | python3-pip                | Package manager for Python                                 |
+| Conan                       | conan                      | Package manager for C/C++                                  |
+| Perl                        | libperl-dev                | Perl development files                                     |
+| SSH2                        | libssh2-1-dev              | SSH2 library development files                             |
+| Libgcrypt                   | libgcrypt-dev              | Libgcrypt development files                                |
+
+<!--openSUSE-->
+
+| Software                    | Package name                 | Description                                                |
+|-----------------------------|------------------------------|------------------------------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkg-config  | Mandatory tools to compile.                                |
+| CMake                       | cmake                        | Read the build script and prepare sources for compilation. |
+| pip                         | python3-pip                  | Package manager for Python                                 |
+| Conan                       | conan                        | Package manager for C/C++                                  |
+| Perl                        | perl                         | Perl interpreter and core modules                          |
+| SSH2                        | libssh2-devel                | SSH2 library development files                             |
+| Libgcrypt                   | libgcrypt-devel              | Libgcrypt development files                                |
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+#### Common packages
+
+Use the system package manager to install them:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+```shell
+yum install gcc gcc-c++ make cmake3 pkgconfig python-pip perl libssh2-devel libgcrypt-devel
+```
+
+<!--CentOS 8-->
+
+```shell
+dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip perl libssh2-devel libgcrypt-devel
+```
+
+<!--Debian / Raspbian-->
+
+```shell
+apt-get install build-essential cmake pkg-config python3-pip libperl-dev libssh2-1-dev libgcrypt-dev
+```
+
+<!--openSUSE-->
+
+```shell
+zypper install gcc gcc-c++ make cmake pkg-config python3-pip perl libssh2-devel libgcrypt-devel
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+#### Conan
+
+Install Conan using pip as follow:
+
+```shell
+pip3 install conan
+```
+
+Then add Centreon's Conan repository:
+
+```shell
+conan remote add centreon https://api.bintray.com/conan/centreon/centreon
+```
+
+#### Centreon Clib
+
+Follow the [above procedure](#centreon-clib) to install Centreon Clib.
+
+### Build
+
+#### Get sources
+
+Centreon Connectors can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-connectors)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
+
+```shell
+git clone -b x.y.z https://github.com/centreon/centreon-connectors
+```
+
+<!--Download website-->
+
+```shell
+wget http://files.download.centreon.com/public/centreon-connectors/centreon-connectors-x.y.z.tar.gz
+tar xzf centreon-connectors-x.y.z.tar.gz
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
+
+#### Configuration
+
+At the root of the project directory, create a build directory, then
+place yourself in it:
+
+```shell
+mkdir /path_to_centreon_connectors/build
+cd /path_to_centreon_connectors/build
+```
+
+Install the C++ dependencies using Conan:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GCC > 5.0-->
+
+```shell
+conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
+```
+
+<!--GCC < 5.0-->
+
+```shell
+conan install --remote centreon --build missing ..
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+> All the dependencies pulled by Conan are located in conanfile.txt. If
+> you want to use a dependency from your package manager instead of Conan,
+> you need to remove it from conanfile.txt.
+
+Finally, launch the *cmake* command that will prepare the compilation
+environment.
+
+Recommended command for your distribution:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+```shell
+cmake \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
+    -DWITH_TESTING=On ..
+```
+
+<!--CentOS 8-->
+
+```shell
+cmake \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
+    -DWITH_TESTING=On ..
+```
+
+<!--Debian / Raspbian-->
+
+```shell
+cmake \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
+    -DWITH_TESTING=On ..
+```
+
+<!--openSUSE-->
+
+```shell
+cmake \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
+    -DWITH_TESTING=On ..
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+At this step, the software will check for existence and usability of the
+prerequisites. If one cannot be found, an appropriate error message will
+be printed. Otherwise an installation summary will be printed.
+
+> If you need to change the options you used to compile your software, you
+> might want to remove the *CMakeCache.txt* file that is in the *build*
+> directory. This will remove cache entries that might have been computed
+> during the last configuration step.
+
+Your Centreon Connectors can be tweaked to your particular needs using
+CMake's variable system. Variables can be set like this:
+
+```shell
+cmake -D<variable1>=<value1> [-D<variable2>=<value2>] ..
+```
+
+Here's the list of variables available and their description:
+
+| Variable                         | Description                                                                                                                                | Default value        |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
+| `WITH_CENTREON_CLIB_INCLUDE_DIR` | Set the directory path of centreon-clib include.                                                                                           | auto detection       |
+| `WITH_CENTREON_CLIB_LIBRARIES`   | Set the centreon-clib library to use.                                                                                                      | auto detection       |
+| `WITH_CENTREON_CLIB_LIBRARY_DIR` | Set the centreon-clib library directory (don't use it if you use `WITH_CENTREON_CLIB_LIBRARIES`)                                           | auto detection       |
+| `WITH_KNOWN_HOSTS_CHECK`         | Enable or disable check hosts against user's known\_hosts file.                                                                            | `Off`                |
+| `WITH_LIBGCRYPT_INCLUDE_DIR`     | Set the directory path of libgcrypt include.                                                                                               | auto detection       |
+| `WITH_LIBGCRYPT_LIBRARIES`       | Set the libgcrypt library to use.                                                                                                          | auto detection       |
+| `WITH_LIBGCRYPT_LIBRARY_DIR`     | Set the libgcrypt library directory (don't use it if you use `WITH_LIBGCRYPT_LIBRARIES`)                                                   | auto detection       |
+| `WITH_LIBSSH2_INCLUDE_DIR`       | Set the directory path of libssh2 include.                                                                                                 | auto detection       |
+| `WITH_LIBSSH2_LIBRARIES`         | Set the libssh2 library to use.                                                                                                            | auto detection       |
+| `WITH_LIBSSH2_LIBRARY_DIR`       | Set the libssh2 library directory (don't use it if you use `WITH_LIBSSH2_LIBRARIES`)                                                       | auto detection       |
+| `WITH_PREFIX`                    | Base directory for Centreon Connectors installation. If other prefixes are expressed as relative paths, they are relative to this path.    | `/usr/local`         |
+| `WITH_PREFIX_BINARY`             | Define specific directory for Centreon Connectors binary.                                                                                  | `${WITH_PREFIX}/bin` |
+| `WITH_TESTING`                   | Enable generation of unit tests. They can later be run by typing *make test*.                                                              | `Off`                |
+
+#### Compilation
+
+Once properly configured, the compilation process is really simple:
+
+```shell
+make -jx
+```
+
+Where *x* is the number of core on your server, useful to make compilation
+run faster.
+
+And wait until compilation completes.
+
+### Install
+
+Once compiled, the following command must be run as privileged user to
+finish installation:
+
+```shell
+make install
+```
+
+And wait for its completion.
+
+## Centreon Plugins
+
+### Prerequisites
+
+To use the Centreon Plugins, you will need the following external
+dependencies:
+
+- Perl, the Perl interpreter and core modules,
+- Multiple Perl libraries depending on the Plugins.
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+| Software  | Package name                                                                                                               | Description                       |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+
+<!--CentOS 8-->
+
+| Software  | Package name                                                                                                                                                                                                                          | Description                       |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| Perl      | perl                                                                                                                                                                                                                                  | Perl interpreter and core modules |
+| Libraries | libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl | Perl libraries                    |
+
+<!--Debian / Raspbian-->
+
+| Software  | Package name                                                                                                               | Description                       |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+
+<!--openSUSE-->
+
+| Software  | Package name                                                                                                               | Description                       |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+Use the system package manager to install them:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 7-->
+
+```shell
+yum install perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg
+```
+
+<!--CentOS 8-->
+
+```shell
+dnf install perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg
+```
+
+<!--Debian / Raspbian-->
+
+```shell
+apt-get perl libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl
+```
+
+<!--openSUSE-->
+
+```shell
+zypper perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Get sources
+
+Centreon Plugins can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-plugins)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
+
+```shell
+git clone -b YYYYMMDD https://github.com/centreon/centreon-plugins
+```
+
+<!--Download website-->
+
+```shell
+wget http://files.download.centreon.com/public/centreon-plugins/centreon-plugins-YYYYMMDD.tar.gz
+tar xzf centreon-plugins-YYYYMMDD.tar.gz
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With YYYYMMDD being the version you want to use.
+
+### Install
+
+Move the downloaded project to the final plugins folder:
+
+```shell
+mkdir /usr/lib/centreon/plugins/
+mv /path_to_centreon_plugins/* /usr/lib/centreon/plugins/
+chmod +x /usr/lib/centreon/plugins/*
+```

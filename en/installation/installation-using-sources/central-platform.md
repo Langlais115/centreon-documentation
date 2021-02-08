@@ -3,298 +3,129 @@ id: central-platform
 title: Central Platform
 ---
 
-> Most RHEL / CentOS / Oracle Linux users will find easier to install
-> Centreon Web by [using packages](using-packages.html).
+The Central Platform of Centreon is composed of:
 
-## Prerequisites
+- Web UI, a graphical interface to administrate, configure and visualize
+  everything,
+- Gorgone, a task manager for distributed architecture.
+
+The following chapters describe how to compile each one of those components.
+
+The tested distributions and versions are:
+
+| Distribution    | Version | Gorgone | Web |
+|-----------------|---------|---------|-----|
+| CentOS          | 8.3     |         |     |
+| CentOS          | 7.9     |         |     |
+| Oracle Linux    | 8.3     |         |     |
+| Debian          | 10.8    |         |     |
+| Ubuntu          | 20.10   |         |     |
+| Ubuntu          | 20.04   |         |     |
+| openSUSE Leap   | 15.2    |         |     |
+
+## Centreon Gorgone
+
+To install and run Centreon Gorgone, you will need the following external
+dependencies:
+
+- Perl, the Perl interpreter and core modules,
+- ZMQ, an asynchronous messaging library,
+- libssh development files (for SSH communication),
+- Perl libssh, a Perl binding to libssh,
+- Perl compilation modules.
+
+#### Common packages
+
+Use the system package manager to install them:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS-->
-
-To install Centreon you will need to set up the official software
-collections repository supported by Redhat.
-
-> Software collections are required for installing PHP 7 and associated
-> libraries (Centreon requirement).
-
-Install the software collections repository using this command:
+<!--CentOS 8-->
 
 ```shell
-yum install -y centos-release-scl
+
 ```
 
-The repository is now installed.
-
-You can now install the necessary prerequisites:
+<!--CentOS 7-->
 
 ```shell
-yum update
-yum install -y \
-    rh-php72 \
-    rh-php72-php-zip \
-    rh-php72-php-xml \
-    rh-php72-php-fpm \
-    rh-php72-php-process \
-    rh-php72-php-common \
-    rh-php72-php-pdo \
-    rh-php72-php-intl \
-    rh-php72-php-pear \
-    rh-php72-php-json \
-    rh-php72-php-mysqlnd \
-    rh-php72-php-ldap \
-    rh-php72-php-gd \
-    rh-php72-php-cli \
-    rh-php72-php-mbstring \
-    rh-php72-php-snmp \
-    perl-DBD-MySQL \
-    perl-Sys-Syslog \
-    httpd24-httpd \
-    perl-DBI \
-    perl-DBD-MySQL \
-    rrdtool \
-    perl-rrdtool \
-    perl-Crypt-DES \
-    perl-Digest-SHA1 \
-    perl-Digest-HMAC \
-    net-snmp-utils \
-    perl-Socket6 \
-    perl-IO-Socket-INET6 \
-    net-snmp \
-    net-snmp-libs \
-    dmidecode \
-    lm_sensors \
-    net-snmp-perl \
-    fping \
-    cpp \
-    gcc \
-    gcc-c++ \
-    libstdc++ \
-    glib2-devel
+
 ```
 
-Additional commands are necessary to configure the environment correctly:
+<!--Debian-->
 
 ```shell
-usermod -U apache
-/opt/rh/rh-php72/root/bin/pear channel-update pear.php.net
+apt install perl libzmq3-dev libzmq5 libssh-dev libextutils-makemaker-cpanfile-perl libmodule-build-perl libmodule-install-perl libcryptx-perl libschedule-cron-perl libcrypt-cbc-perl libjson-xs-perl libjson-pp-perl libxml-simple-perl libnet-smtp-ssl-perl libconfig-yaml-perl libyaml-libyaml-perl libdbd-sqlite3-perl libdbd-mysql-perl libdbi-perl libdata-uuid-perl libhttp-daemon-perl libhttp-message-perl libmime-base64-perl libdigest-md5-file-perl libwww-curl-perl libhttp-daemon-ssl-perl libnetaddr-ip-perl libhash-merge-perl libdata-clone-perl
 ```
 
-If you can't access the Internet directly but have to pass via a proxy,
-perform the following command:
+<!--openSUSE-->
 
 ```shell
-/opt/rh/rh-php72/root/bin/pear config-set http_proxy http://my_proxy.com:port
+zypper install perl zeromq zeromq-devel libssh-devel perl-ExtUtils-MakeMaker perl-ExtUtils-MakeMaker-CPANfile perl-Module-Build perl-Module-Install perl-CryptX perl-Crypt-CBC perl-JSON-XS perl-JSON perl-XML-Simple perl-Net-SMTP-SSL perl-YAML perl-YAML-LibYAML perl-DBD-SQLite perl-DBD-mysql perl-DBI perl-Data-UUID perl-HTTP-Daemon perl-HTTP-Message perl-Digest-Perl-MD5 perl-HTTPS-Daemon perl-NetAddr-IP perl-Hash-Merge perl-Clone
 ```
 
-Then execute:
+perl(Net::Curl::Easy)
 
-```shell
-/opt/rh/rh-php72/root/bin/pear upgrade-all
-```
-<!--Debian Stretch / Ubuntu 18.04-->
-Add the php 7.2 repository:
-
-### For Debian Stretch
-
-```shell
-apt-get install wget apt-transport-https lsb-release ca-certificates
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/php.list
-apt-get update
-```
-
-### For Ubuntu 18.04
-
-> It is necessary to add sudo in front of the following commands:
->
-> ```shell
-> $ apt-get install software-properties-common
-> $ add-apt-repository ppa:ondrej/php
-> $ apt update
-> ```
-
-Install the following prerequisites:
-
-```shell
-apt-get install \
-    php7.2 \
-    php7.2-opcache \
-    libapache2-mod-php7.2 \
-    php7.2-mysql \
-    php7.2-curl \
-    php7.2-json \
-    php7.2-gd \
-    php7.2-mcrypt \
-    php7.2-intl \
-    php7.2-mbstring \
-    php7.2-xml \
-    php7.2-zip \
-    php7.2-fpm \
-    php7.2-readline \
-    php7.2-sqlite3 \
-    php7.2-ldap \
-    php7.2-snmp \
-    php-db \
-    php-date
-    php-pear \
-    sudo \
-    tofrodos \
-    bsd-mailx \
-    lsb-release \
-    mariadb-server \
-    libconfig-inifiles-perl \
-    libcrypt-des-perl \
-    libdigest-hmac-perl \
-    libdigest-sha-perl \
-    libgd-perl
-```
-
-Activate the modules:
-
-```shell
-a2enmod proxy_fcgi setenvif proxy rewrite
-a2enconf php7.2-fpm
-a2dismod php7.2
-systemctl restart apache2 php7.2-fpm
-```
-
-Additional commands are necessary to configure the environment correctly:
-
-```shell
-groupadd -g 6000 centreon
-useradd -u 6000 -g centreon -m -r -d /var/lib/centreon -c "Centreon Admin" -s /bin/sh centreon
-```
-
-To finish, you should install SNMP MIBs. Because of a license problem the MIB files are not available by default in
-Debian. To add them, change the /etc/apt/sources.list file and add the *non-free* category.
-
-Execute the following commands:
-
-```shell
-apt-get update
-apt-get install snmp-mibs-downloader
-```
-
-Then modify the SNMP configuration file */etc/default/snmpd* by adding:
-
-```shell
-export MIBDIRS=/usr/share/snmp/mibs
-export MIBS=ALL
-```
-
-And commenting:
-
-```shell
-#mibs ALL
-```
-
-Restart SNMP service:
-
-```shell
-service snmpd restart
-service snmptrapd restart
-```
-
-<!--Suse-->
-Install the following prerequisites:
-
-```shell
-yast -i gcc \
-    gcc-c++ \
-    make \
-    automake \
-    apache2 \
-    php5 \
-    php5-mysql \
-    apache2-mod_php5 \
-    php5-pear \
-    php5-ldap \
-    php5-snmp \
-    php5-gd \
-    php5-soap \
-    php5-intl \
-    php5-posix \
-    php5-gettext \
-    php5-mbstring \
-    mysql \
-    libmysqlclient-devel \
-    perl-DBD-mysql \
-    mysql-community-server \
-    rrdtool \
-    perl-Config-IniFiles \
-    net-snmp \
-    perl-Net-SNMP \
-    perl-SNMP \
-    gd \
-    libjpeg-devel \
-    libpng-devel \
-    fontconfig-devel \
-    freetype2-devel \
-    sudo \
-    mailx \
-    fping \
-    iputils \
-    dos2unix \
-    cron \
-    dejavu \
-    nagios-plugins
-```
-
-On some OpenSuse distributions, the default settings of the **mine** type are not valid to function with the Centreon
-web interface. Edit the */etc/mime.types* file and find the lines:
-
-```shell
-text/x-xsl xsl
-text/x-xslt xslt xsl
-```
-
-Replace them by:
-
-```shell
-text/xml xsl
-text/xml xslt xsl
-```
-
-Save the file and restart Apache:
-
-```shell
-/etc/init.d/apache2 restart
-```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-## Collect stack
-
-### Centreon Engine
-
-You can install it following the procedure in documentation. Don't forget to install the
-[Nagios plugins](http://nagios.sourceforge.net/docs/3_0/quickstart.html) if you have not already done so.
-
-### Centreon Broker
-
-Install this Stream Multiplexers before continuing with the installation.
-
-## Web interface
-
-Download the latest version of Centreon [here](https://download.centreon.com).
-
-Extract the Centreon archive:
+#### Other packages
 
 ```shell
-tar zxf centreon-web-YY.MM.x.tar.gz
-cd centreon-web-YY.MM.x
+wget http://search.cpan.org/CPAN/authors/id/M/MO/MOSCONI/ZMQ-LibZMQ4-0.01.tar.gz
+tar zxf ZMQ-LibZMQ4-0.01.tar.gz
+cd ZMQ-LibZMQ4-0.01
+sed -i -e "s/tools/.\/tools/g" Makefile.PL
+perl Makefile.PL
+make
+make install
 ```
 
-> The installation script allows customized configuration; this process will show you the best paths to use. Furthermore
-quick yes/no questions can be replied to by [y] most of the time.
->
-> If centreon sources have been downloaded from github, run those commands:
->
-> ```shell
-> composer install --no-dev --optimize-autoloader
-> npm install
-> npm run build
-> ```
+```shell
+wget https://cpan.metacpan.org/authors/id/D/DM/DMAKI/ZMQ-Constants-1.04.tar.gz
+tar zxf ZMQ-Constants-1.04.tar.gz
+cd ZMQ-Constants-1.04
+perl Makefile.PL
+make
+make install
+```
+
+```shell
+git clone https://github.com/garnier-quentin/perl-libssh.git
+cd perl-libssh
+perl Makefile.PL
+make
+make install
+```
+
+### Prepare
+
+#### Get sources
+
+Centreon Gorgone can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon-gorgone)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
+
+```shell
+git clone -b x.y.z https://github.com/centreon/centreon-gorgone
+```
+
+<!--Download website-->
+
+```shell
+wget http://files.download.centreon.com/public/centreon-gorgone/centreon-gorgone-x.y.z.tar.gz
+tar xzf centreon-gorgone-x.y.z.tar.gz
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
+
+### Install
 
 Run the installation script:
 
@@ -302,7 +133,600 @@ Run the installation script:
 ./install.sh -i
 ```
 
-### Prerequisites check
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--Debian-->
+
+```shell
+Do you accept the license ?
+[y/n], default to [n]:
+> y
+------------------------------------------------------------------------
+        Checking all needed binaries
+------------------------------------------------------------------------
+rm                                                         OK
+cp                                                         OK
+mv                                                         OK
+/usr/bin/chmod                                             OK
+/usr/bin/chown                                             OK
+echo                                                       OK
+more                                                       OK
+mkdir                                                      OK
+find                                                       OK
+/usr/bin/grep                                              OK
+/usr/bin/cat                                               OK
+/usr/bin/sed                                               OK
+
+------------------------------------------------------------------------
+        Checking the mandatory folders
+------------------------------------------------------------------------
+
+Do you want to be asked for confirmation before creating missing resources ?
+[y/n], default to [y]:
+> n
+Ask confirmation before creation                           NO
+
+Where is your Gorgone log folder
+default to [/var/log/centreon-gorgone]
+> 
+Path /var/log/centreon-gorgone                             OK
+
+Where is your Gorgone database folder
+default to [/var/lib/centreon-gorgone]
+> 
+Path /var/lib/centreon-gorgone                             OK
+
+Where is your Gorgone config (etc) folder
+default to [/etc/centreon-gorgone]
+> 
+Path /etc/centreon-gorgone                                 OK
+Creating folder /etc/centreon-gorgone/config.d             OK
+Path /etc/centreon-gorgone/config.d                        OK
+
+Where are your Gorgone user's folder
+default to [/usr/bin/]
+> 
+Path /usr/bin/                                             OK
+
+Where are your Gorgone's perl files
+default to [/usr/share/perl5]
+> 
+Path /usr/share/perl5                                      OK
+
+Where is your sysconfig folder ?
+default to [/etc/sysconfig]
+> /etc/default
+Path /etc/default                                          OK
+------------------------------------------------------------------------
+        Checking the required users
+------------------------------------------------------------------------
+
+What is the Gorgone group ?
+default to [centreon-gorgone]
+> 
+Creating group centreon-gorgone                            OK
+
+What is the Gorgone user ?
+default to [centreon-gorgone]
+> 
+Creating user centreon-gorgone (Gorgone user)              OK
+
+------------------------------------------------------------------------
+        Adding Gorgone user to the mandatory folders
+------------------------------------------------------------------------
+Modify owner of /var/log/centreon-gorgone                  OK
+Modify rights of /var/log/centreon-gorgone                 OK
+Modify owner of /var/lib/centreon-gorgone                  OK
+Modify rights of /var/lib/centreon-gorgone                 OK
+------------------------------------------------------------------------
+        Installing Gorgone daemon
+------------------------------------------------------------------------
+Creating and adding rights on gorgoned.service             OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on config.yaml                  OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on gorgone_config_init.pl       OK
+------------------------------------------------------------------------
+        Starting gorgoned.service
+------------------------------------------------------------------------
+Created symlink /etc/systemd/system/multi-user.target.wants/gorgoned.service → /etc/systemd/system/gorgoned.service.
+Created symlink /etc/systemd/system/centreon.service.wants/gorgoned.service → /etc/systemd/system/gorgoned.service.
+
+###############################################################################
+#                                                                             #
+#                         Thanks for using Gorgone.                           #
+#                          -----------------------                            #
+#                                                                             #
+#           Please add the configuration in a file in the folder :            #
+#                           /etc/centreon-gorgone/config.d                             #
+#                     Then start the gorgoned.service                         #
+#                                                                             #
+#                You can read the documentation available here :              #
+#      https://github.com/centreon/centreon-gorgone/blob/master/README.md     #
+#                                                                             #
+#      ------------------------------------------------------------------     #
+#                                                                             #
+#     Report bugs at https://github.com/centreon/centreon-gorgone/issues      #
+#                                                                             #
+#                        Contact : contact@centreon.com                       #
+#                          http://www.centreon.com                            #
+#                                                                             #
+#                          -----------------------                            #
+#              For security issues, please read our security policy           #
+#           https://github.com/centreon/centreon-gorgone/security/policy      #
+#                                                                             #
+###############################################################################
+```
+
+<!--openSUSE-->
+
+```shell
+Do you accept the license ?
+[y/n], default to [n]:
+> y
+------------------------------------------------------------------------
+        Checking all needed binaries
+------------------------------------------------------------------------
+rm                                                         OK
+cp                                                         OK
+mv                                                         OK
+/usr/bin/chmod                                             OK
+/usr/bin/chown                                             OK
+echo                                                       OK
+more                                                       OK
+mkdir                                                      OK
+find                                                       OK
+/usr/bin/grep                                              OK
+/usr/bin/cat                                               OK
+/usr/bin/sed                                               OK
+
+------------------------------------------------------------------------
+        Checking the mandatory folders
+------------------------------------------------------------------------
+
+Do you want to be asked for confirmation before creating missing resources ?
+[y/n], default to [y]:
+> n
+Ask confirmation before creation                           NO
+
+Where is your Gorgone log folder
+default to [/var/log/centreon-gorgone]
+> 
+Path /var/log/centreon-gorgone                             OK
+
+Where is your Gorgone database folder
+default to [/var/lib/centreon-gorgone]
+> 
+Path /var/lib/centreon-gorgone                             OK
+
+Where is your Gorgone config (etc) folder
+default to [/etc/centreon-gorgone]
+> 
+Path /etc/centreon-gorgone                                 OK
+Creating folder /etc/centreon-gorgone/config.d             OK
+Path /etc/centreon-gorgone/config.d                        OK
+
+Where are your Gorgone user's folder
+default to [/usr/bin/]
+> 
+Path /usr/bin/                                             OK
+
+Where are your Gorgone's perl files
+default to [/usr/lib/perl5/vendor_perl/5.26.1]
+> 
+Path /usr/lib/perl5/vendor_perl/5.26.1                     OK
+------------------------------------------------------------------------
+        Checking the required users
+------------------------------------------------------------------------
+
+What is the Gorgone group ?
+default to [centreon-gorgone]
+> 
+Creating group centreon-gorgone                            OK
+
+What is the Gorgone user ?
+default to [centreon-gorgone]
+> 
+Creating user centreon-gorgone (Gorgone user)              OK
+
+------------------------------------------------------------------------
+        Adding Gorgone user to the mandatory folders
+------------------------------------------------------------------------
+Modify owner of /var/log/centreon-gorgone                  OK
+Modify rights of /var/log/centreon-gorgone                 OK
+Modify owner of /var/lib/centreon-gorgone                  OK
+Modify rights of /var/lib/centreon-gorgone                 OK
+------------------------------------------------------------------------
+        Installing Gorgone daemon
+------------------------------------------------------------------------
+Creating and adding rights on gorgoned.service             OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on config.yaml                  OK
+Creating and adding rights on gorgoned                     OK
+Creating and adding rights on gorgone_config_init.pl       OK
+------------------------------------------------------------------------
+        Starting gorgoned.service
+------------------------------------------------------------------------
+Impossible to install your run level for gorgoned          FAIL
+
+###############################################################################
+#                                                                             #
+#                         Thanks for using Gorgone.                           #
+#                          -----------------------                            #
+#                                                                             #
+#           Please add the configuration in a file in the folder :            #
+#                           /etc/centreon-gorgone/config.d                             #
+#                     Then start the gorgoned.service                         #
+#                                                                             #
+#                You can read the documentation available here :              #
+#      https://github.com/centreon/centreon-gorgone/blob/master/README.md     #
+#                                                                             #
+#      ------------------------------------------------------------------     #
+#                                                                             #
+#     Report bugs at https://github.com/centreon/centreon-gorgone/issues      #
+#                                                                             #
+#                        Contact : contact@centreon.com                       #
+#                          http://www.centreon.com                            #
+#                                                                             #
+#                          -----------------------                            #
+#              For security issues, please read our security policy           #
+#           https://github.com/centreon/centreon-gorgone/security/policy      #
+#                                                                             #
+###############################################################################
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+## Centreon Web
+
+### Prerequisites
+
+To install and run Centreon Web, you will need the following external
+dependencies:
+
+- Apache 2.4, the web server,
+- MariaDB 10.3, the database management system to store the configuration
+  and realtime data,
+- PHP 7.2 and common PHP libraries,
+- Composer, a PHP package manager,
+- npm, a JavaScript package manager,
+- Perl 5 and some Perl libraries,
+- RRDTool 1.7, the database management system to store metrics and draw graphs.
+
+#### Common packages
+
+Use the system package manager to install them:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 8-->
+
+```shell
+dnf install dnf-plugins-core epel-release
+dnf config-manager --set-enabled powertools
+dnf install httpd MariaDB-client MariaDB-common MariaDB-shared MariaDB-server net-snmp net-snmp-libs net-snmp-perl net-snmp-utils perl perl-Crypt-DES perl-DBD-MySQL perl-DBI perl-Digest-HMAC perl-Digest-SHA1 perl-HTML-Parser perl-IO-Socket-INET6 perl-rrdtool perl-Socket6 perl-Sys-Syslog php php-zip php-xml php-fpm php-process php-common php-pdo php-intl php-pear php-json php-mysqlnd php-ldap php-gd php-cli php-mbstring php-snmp rrdtool rrdtool-perl rsync sudo
+```
+
+<!--CentOS 7-->
+
+```shell
+yum install centos-release-scl
+yum install httpd24-httpd MariaDB-client MariaDB-common MariaDB-shared MariaDB-server net-snmp net-snmp-libs net-snmp-perl net-snmp-utils perl perl-Crypt-DES perl-DBD-MySQL perl-DBI perl-Digest-HMAC perl-Digest-SHA1 perl-HTML-Parser perl-IO-Socket-INET6 perl-rrdtool perl-Socket6 perl-Sys-Syslog rh-php72 rh-php72-php-zip rh-php72-php-xml rh-php72-php-fpm rh-php72-php-process rh-php72-php-common rh-php72-php-pdo rh-php72-php-intl rh-php72-php-pear rh-php72-php-json rh-php72-php-mysqlnd rh-php72-php-ldap rh-php72-php-gd rh-php72-php-cli rh-php72-php-mbstring rh-php72-php-snmp rrdtool rrdtool-perl rsync sudo
+```
+
+<!--Debian-->
+
+```shell
+apt-get install wget apt-transport-https lsb-release ca-certificates
+wget https://packages.sury.org/php/apt.gpg -O /etc/apt/trusted.gpg.d/php.gpg
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/php.list
+apt-get update
+apt-get install apache2 libapache2-mod-php7.2 libcrypt-des-perl libdigest-hmac-perl libdigest-sha-perl libgd-perl mariadb-client-10.3 mariadb-server-10.3 php7.2 php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-intl php7.2-json php7.2-ldap php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-readline php7.2-snmp php7.2-sqlite3 php7.2-xml php7.2-zip php-date php-pear rsync sudo
+```
+
+<!--openSUSE-->
+
+```shell
+zypper addrepo --priority 70 --gpgcheck --refresh https://yum.mariadb.org/10.3/sles/15/x86_64 mariadb103
+zypper addrepo --priority 70 --gpgcheck --refresh https://download.opensuse.org/repositories/devel:/languages:/php:/php72/openSUSE_Leap_15.2 php72
+zypper --gpg-auto-import-keys refresh
+zypper install httpd MariaDB-client MariaDB-common MariaDB-shared MariaDB-server net-snmp libsnmp30 perl-Net-SNMP perl perl-Crypt-DES perl-DBD-mysql perl-DBI perl-Digest-HMAC perl-Digest-SHA1 perl-HTML-Parser perl-IO-Socket-INET6 perl-rrdtool perl-Socket6 php7 php7-ctype php7-curl php7-dom php7-fpm php7-gd php7-iconv php7-intl php7-json php7-ldap php7-mbstring php7-mysql php7-openssl php7-pdo php7-pear php7-pear-Archive_Tar php7-phar php7-snmp php7-sqlite php7-tokenizer php7-xmlreader php7-xmlwriter php7-zip php7-zlib rrdtool perl-rrdtool rsync sudo
+```
+
+perl-Sys-Syslog net-snmp-utils php-common php-cli php-process
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+#### Configuration
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 8-->
+
+```shell
+tee /etc/php.d/50-centreon.ini <<EOF
+date.timezone = Europe/Paris
+max_execution_time = 300
+session.use_strict_mode = 1
+session.gc_maxlifetime = 7200
+EOF
+```
+
+<!--CentOS 7-->
+
+```shell
+tee /etc/opt/rh/rh-php72/php.d/50-centreon.ini <<EOF
+date.timezone = Europe/Paris
+max_execution_time = 300
+session.use_strict_mode = 1
+session.gc_maxlifetime = 7200
+EOF
+```
+
+<!--Debian-->
+
+```shell
+a2enmod proxy_fcgi setenvif proxy rewrite
+a2enconf php7.2-fpm
+a2dismod php7.2
+```
+
+```shell
+tee /etc/php/7.2/apache2/conf.d/50-centreon.ini <<EOF
+date.timezone = Europe/Paris
+max_execution_time = 300
+session.use_strict_mode = 1
+session.gc_maxlifetime = 7200
+EOF
+```
+
+```shell
+systemctl restart apache2 php7.2-fpm
+```
+
+```shell
+mkdir /etc/systemd/system/mariadb.service.d
+```
+
+```shell
+tee /etc/systemd/system/mariadb.service.d/limitnofile.conf <<EOF
+[Service]
+LimitNOFILE=32000
+EOF
+```
+
+```shell
+tee /etc/mysql/conf.d/centreon.cnf <<EOF
+#
+# Custom MySQL/MariaDB server configuration for Centreon
+#
+[server]
+innodb_file_per_table=1
+open_files_limit = 32000
+
+key_buffer_size = 256M
+sort_buffer_size = 32M
+join_buffer_size = 4M
+thread_cache_size = 64
+read_buffer_size = 512K
+read_rnd_buffer_size = 256K
+max_allowed_packet = 8M
+
+# For 4 Go Ram
+#innodb_additional_mem_pool_size=512M
+#innodb_buffer_pool_size=512M
+
+# For 8 Go Ram
+#innodb_additional_mem_pool_size=1G
+#innodb_buffer_pool_size=1G
+EOF
+```
+
+```shell
+systemctl daemon-reload
+systemctl restart mariadb
+```
+
+<!--openSUSE-->
+
+```shell
+tee /etc/php7/conf.d/centreon.ini <<EOF
+date.timezone = Europe/Paris
+max_execution_time = 300
+session.use_strict_mode = 1
+session.gc_maxlifetime = 7200
+EOF
+```
+
+```shell
+systemctl restart apache2 php-fpm
+```
+
+```shell
+tee /etc/systemd/system/mariadb.service.d/limitnofile.conf <<EOF
+[Service]
+LimitNOFILE=32000
+EOF
+```
+
+```shell
+tee /etc/mysql/conf.d/centreon.cnf <<EOF
+#
+# Custom MySQL/MariaDB server configuration for Centreon
+#
+[server]
+innodb_file_per_table=1
+open_files_limit = 32000
+
+key_buffer_size = 256M
+sort_buffer_size = 32M
+join_buffer_size = 4M
+thread_cache_size = 64
+read_buffer_size = 512K
+read_rnd_buffer_size = 256K
+max_allowed_packet = 8M
+
+# For 4 Go Ram
+#innodb_additional_mem_pool_size=512M
+#innodb_buffer_pool_size=512M
+
+# For 8 Go Ram
+#innodb_additional_mem_pool_size=1G
+#innodb_buffer_pool_size=1G
+EOF
+```
+
+```shell
+systemctl daemon-reload
+systemctl restart mariadb
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+--common
+
+```shell
+groupadd centreon
+useradd -g centreon -m -r -d /var/spool/centreon centreon
+```
+
+```shell
+usermod -aG centreon centreon-broker centreon-engine centreon-gorgone
+```
+
+### Prepare
+
+#### Get sources
+
+Centreon Web can be checked out from the
+[GitHub repository](https://github.com/centreon/centreon)
+or downloaded from Centreon
+[download website](https://download.centreon.com/)
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--GitHub repository-->
+
+```shell
+git clone -b x.y.z https://github.com/centreon/centreon
+```
+
+<!--Download website-->
+
+```shell
+wget http://files.download.centreon.com/public/centreon/centreon-web-x.y.z.tar.gz
+tar xzf centreon-web-x.y.z.tar.gz
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+With x.y.z being the version you want to compile.
+
+#### Composer
+
+Install Composer:
+
+```shell
+wget https://getcomposer.org/installer -O composer-setup.php
+php composer-setup.php --install-dir=/usr/bin --filename=composer
+```
+
+It should result to:
+
+```shell
+All settings correct for using Composer
+Downloading...
+
+Composer (version 2.0.9) successfully installed to: /root/composer.phar
+Use it: php /usr/bin/composer
+```
+
+Then install the PHP dependencies from Centreon Web source folder:
+
+```shell
+cd /path_to_centreon_web
+composer install --no-dev --optimize-autoloader
+```
+
+That should result as follow:
+
+```shell
+The "symfony/flex" plugin was skipped because it is not compatible with Composer 2+. Make sure to update it to version 1.9.8 or greater.
+Installing dependencies from lock file
+Verifying lock file contents can be installed on current platform.
+Warning: The lock file is not up to date with the latest changes in composer.json. You may be getting outdated dependencies. It is recommended that you run `composer update` or `composer update <package name>`.
+Nothing to install, update or remove
+Package phpunit/php-token-stream is abandoned, you should avoid using it. No replacement was suggested.
+Generating optimized autoload files
+Class Tests\Centreon\Domain\Monitoring\StringConverterTest located in ./tests/php/Utility/StringConverterTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Tests\Centreon\Application\Controller\Filter\FilterControllerTest located in ./tests/php/Centreon/Application/Controller/FilterControllerTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Tests\Centreon\Application\Controller\Monitoring\Metric\MetricControllerTest located in ./tests/php/Centreon/Application/Controller/Monitoring/MetricControllerTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Tests\Centreon\Application\Controller\Monitoring\AcknowledgementControllerTest located in ./tests/php/Centreon/Application/Controller/AcknowledgementControllerTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Tests\Centreon\Domain\Monitoring\FilterServiceTest located in ./tests/php/Centreon/Domain/Filter/FilterServiceTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class CentreonLegacy\Core\Install\Step\stepInterface located in ./src/CentreonLegacy/Core/Install/Step/StepInterface.php does not comply with psr-4 autoloading standard. Skipping.
+Class Centreon\Tests\Application\DataRepresenter\NavigationListTest located in ./src/Centreon/Tests/Application/DataRepresenter/Topology/NavigationListTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Centreon\Tests\Application\DataRepresenter\CentreonValidatorTranslatorTest located in ./src/Centreon/Tests/Application/Validation/CentreonValidatorTranslatorTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Centreon\Tests\Application\DataRepresenter\CentreonValidatorFactoryTest located in ./src/Centreon/Tests/Application/Validation/CentreonValidatorFactoryTest.php does not comply with psr-4 autoloading standard. Skipping.
+Class Centreon\Tests\Infrastructure\CentreonLegacyDB\WebServiceAbstractTest located in ./src/Centreon/Tests/Infrastructure/Webservice/WebServiceAbstractTest.php does not comply with psr-4 autoloading standard. Skipping.
+51 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+```
+
+#### npm
+
+Install Node.js:
+
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--CentOS 8-->
+
+```shell
+```
+
+<!--CentOS 7-->
+
+```shell
+```
+
+<!--Debian-->
+
+```shell
+wget https://deb.nodesource.com/setup_14.x
+chmod +x setup_14.x
+./setup_14.x
+apt-get install nodejs
+```
+
+<!--openSUSE-->
+
+```shell
+zypper install nodejs14
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+Then install the JavaScript dependencies from Centreon Web source
+folder:
+
+```shell
+cd /path_to_centreon_web
+npm install
+npm run build
+rm -rf node_modules
+```
+
+### Install
+
+Run the installation script:
+
+```shell
+cd /path_to_centreon_web
+./install.sh -i
+```
+
+#### Prerequisites check
 
 > If the Prerequisites installation step has been run successfully you should have
 > no problem during this stage. Otherwise repeat the Prerequisites installation
@@ -347,7 +771,7 @@ Is the Gorgone module already installed?
 > y
 ```
 
-### License agreement
+#### License agreement
 
 ```shell
 This General Public License does not permit incorporating your program into
@@ -361,7 +785,7 @@ Do you accept GPLv2 license ?
 > y
 ```
 
-### Main components
+#### Main components
 
 Answer **[y]** to all the questions:
 
@@ -383,7 +807,7 @@ Do you want to install : CentreonTrapd process
 > y
 ```
 
-### Definition of installation paths
+#### Definition of installation paths
 
 ```shell
 ------------------------------------------------------------------------
@@ -447,7 +871,7 @@ Finding Apache user :                                      www-data
 Finding Apache group :                                     www-data
 ```
 
-### Centreon user and group
+#### Centreon user and group
 
 Le groupe d'applications **centreon** est utilisé pour les droits d'accès
 entre les différents logiciels de la suite Centreon:
@@ -462,7 +886,7 @@ default to [centreon]
 >
 ```
 
-### Monitoring user
+#### Monitoring user
 
 This is the user used to run the monitoring engine (Centreon Engine).
 
@@ -480,7 +904,7 @@ default to [centreon-broker]
 >
 ```
 
-### Monitoring logs directory
+#### Monitoring logs directory
 
 ```shell
 What is the Monitoring engine log directory ?[/var/log/centreon-engine]
@@ -495,7 +919,7 @@ Add group centreon-engine to user centreon                 OK
 Add group www-data to user centreon                        OK
 ```
 
-### Sudo configuration
+#### Sudo configuration
 
 ```shell
 ------------------------------------------------------------------------
@@ -534,7 +958,7 @@ Do you want me to configure your sudo ? (WARNING)
 Configuring Sudo                                           OK
 ```
 
-### Apache configuration
+#### Apache configuration
 
 ```shell
 ------------------------------------------------------------------------
@@ -553,7 +977,7 @@ Do you want to reload your Apache ?
 Reloading Apache service                                   OK
 ```
 
-### PHP FPM configuration
+#### PHP FPM configuration
 
 ```shell
 ------------------------------------------------------------------------
@@ -563,7 +987,7 @@ Reloading Apache service                                   OK
 Do you want to add Centreon PHP FPM sub configuration file ?
 [y/n], default to [n]:
 > y
-Creating directory /var/lib/centroen/sessions              OK
+Creating directory /var/lib/centreon/sessions              OK
 Create 'etc/php/7.2/fpm/pool.d/centreon.conf'              OK
 Configuring PHP FPM                                        OK
 
@@ -623,7 +1047,7 @@ Install clapi binary                                       OK
 Centreon Web Perl lib installed                            OK
 ```
 
-### Pear module installation
+#### Pear module installation
 
 ```shell
 ------------------------------------------------------------------------
@@ -636,7 +1060,7 @@ Date                            1.4.6       1.4.7          OK
 All PEAR modules                                           OK
 ```
 
-### Configuration file installation
+#### Configuration file installation
 
 ```shell
 ------------------------------------------------------------------------
@@ -646,7 +1070,7 @@ Create /usr/share/centreon/www/install/install.conf.php    OK
 Create /etc/centreon/instCentWeb.conf                      OK
 ```
 
-### Performance data component (Centstorage) installation
+#### Performance data component (Centstorage) installation
 
 ```shell
 ------------------------------------------------------------------------
@@ -684,7 +1108,7 @@ Install CentStorage cron                                   OK
 Create /etc/centreon/instCentStorage.conf                  OK
 ```
 
-### Plugin installation
+#### Plugin installation
 
 ```shell
 ------------------------------------------------------------------------
@@ -704,7 +1128,7 @@ Path /var/lib/centreon/centplugins                         OK
 Create /etc/centreon/instCentPlugins.conf                  OK
 ```
 
-### Centreon SNMP trap management installation
+#### Centreon SNMP trap management installation
 
 ```shell
 ------------------------------------------------------------------------
@@ -776,63 +1200,15 @@ Create /etc/centreon/instCentPlugins.conf                  OK
 ###############################################################################
 ```
 
-### PHP dependencies installation
-
-First, you need to install PHP dependency installer **composer**. Composer can be downloaded
-[here](https://getcomposer.org/download/) (it is also available in EPEL repository).
-
-Once composer is installed, go to the centreon directory (usually **/usr/share/centreon/**) and run the following
-command:
-
-```shell
-composer install --no-dev --optimize-autoloader
-```
-
-### Javascript dependencies installation
-
-First, you need to install javascript runtime **nodejs**. Installation instructions are available
-[here](https://nodejs.org/en/download/package-manager/).
-
-Once nodejs is installed, copy the JSON files to the installation folder:
-
-```shell
-cp /usr/local/src/centreon-web-YY.MM.x/package* /usr/share/centreon/
-```
-
-Then go to the centreon directory (usually **/usr/share/centreon/**) and run the following commands:
-
-```shell
-npm install
-npm run build
-rm -rf node_modules
-```
-
 ### Any operating system
 
-SELinux should be disabled; for this, you have to modify the file **/etc/sysconfig/selinux**
-and replace **enforcing** by **disabled**:
+SELinux should be disabled; for this, you have to modify the
+file **/etc/sysconfig/selinux** and replace **enforcing** by
+**disabled**:
 
 ```shell
 SELINUX=disabled
 ```
-
-After saving the file, please reboot your operating system to apply the changes.
-
-Timezone and mandatory PHP parameters have to be set: go to `/etc/php/7.2/cli/conf.d` or `/etc/php/7.2/apache2/conf.d`
-directory and create a file named `centreon.ini` which contains the following lines:
-
-```shell
-date.timezone = Europe/Paris
-max_execution_time = 300
-session.use_strict_mode = 1
-session.gc_maxlifetime = 7200
-```
-
-After saving the file, please don't forget to restart apache server.
-
-The Mysql database server should be available to complete installation (locally or not). MariaDB is recommended.
-
-After this step you should connect to Centreon to finalize the installation process.
 
 ## Web installation
 

@@ -3,6 +3,29 @@ id: collect-stack
 title: Collect Stack
 ---
 
+The Collect Stack of Centreon is composed of:
+
+- Engine, the check scheduler and alert manager,
+- Broker, the data streaming multiplexer,
+- Plugins, the monitoring probes,
+- Connectors, extensions for checks execution,
+- Clib, a Centreon C library used by some of those components.
+
+The following chapters describe how to compile each one of those components.
+
+The tested distributions and versions are:
+
+| Distribution    | Version | Clib | Engine | Broker | Connectors | Plugins |
+|-----------------|---------|------|--------|--------|------------|---------|
+| CentOS          | 8.3     | o    | o      | o      | o          | o       |
+| CentOS          | 7.9     | o    | o      | o      | o          | o       |
+| Oracle Linux    | 8.3     |      |        |        |            |         |
+| Debian          | 10.8    | o    | o      | o      | o          | o       |
+| Raspberry Pi OS | 10.7    | o    | o      | o      | o          | o       |
+| Ubuntu          | 20.10   | o    | o      | o      |            |         |
+| Ubuntu          | 20.04   |      |        |        |            |         |
+| openSUSE Leap   | 15.2    | o    | o      | o      | o          | o       |
+
 ## Centreon Clib
 
 ### Prerequisites
@@ -14,33 +37,33 @@ To build Centreon Clib, you will need the following external dependencies:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-| Software                    | Package name               | Description                                               |
-|-----------------------------|----------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconfig | Mandatory tools to compile                                |
-| CMake                       | cmake3                     | Read the build script and prepare sources for compilation |
-
 <!--CentOS 8-->
 
-| Software                    | Package name                        | Description                                               |
-|-----------------------------|-------------------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
-| CMake                       | cmake                               | Read the build script and prepare sources for compilation |
+| Software                    | Package name                        |
+|-----------------------------|-------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config |
+| CMake 3                     | cmake                               |
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
-| Software                    | Package name               | Description                                                |
-|-----------------------------|----------------------------|------------------------------------------------------------|
-| C++ compilation environment | build-essential pkg-config | Mandatory tools to compile.                                |
-| CMake                       | cmake                      | Read the build script and prepare sources for compilation. |
+| Software                    | Package name               |
+|-----------------------------|----------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconfig |
+| CMake 3                     | cmake3                     |
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+| Software                    | Package name            |
+|-----------------------------|-------------------------|
+| C++ compilation environment | gcc g++ make pkg-config |
+| CMake 3                     | cmake                   |
 
 <!--openSUSE-->
 
-| Software                    | Package name                | Description                                                |
-|-----------------------------|-----------------------------|------------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkg-config | Mandatory tools to compile.                                |
-| CMake                       | cmake                       | Read the build script and prepare sources for compilation. |
+| Software                    | Package name                |
+|-----------------------------|-----------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkg-config |
+| CMake 3                     | cmake                       |
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
@@ -48,22 +71,29 @@ Use the system package manager to install them:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-yum install gcc gcc-c++ make cmake3 pkgconfig
-```
-
 <!--CentOS 8-->
 
 ```shell
 dnf install gcc gcc-c++ make cmake pkgconf-pkg-config
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
 ```shell
-apt-get install build-essential cmake pkg-config
+yum install gcc gcc-c++ make cmake3 pkgconfig
+```
+
+> You might need to install *Extra Packages for Enterprise Linux*
+> repository:
+>
+> ```shell
+> yum install epel-release
+> ```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+```shell
+apt-get install gcc g++ make cmake pkg-config
 ```
 
 <!--openSUSE-->
@@ -119,39 +149,36 @@ Recommended command for your distribution:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-cmake \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=Off \
-    -DWITH_PREFIX=/usr \
-    -DWITH_PREFIX_LIB=/usr/lib \
-    -DWITH_TESTING=On \
-    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
-```
-
 <!--CentOS 8-->
 
 ```shell
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=On \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_LIB=/usr/lib \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
+
+```shell
+cmake3 \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_LIB=/usr/lib \
+    -DWITH_TESTING=Off \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
 ```shell
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=On \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_LIB=/usr/lib \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
 ```
 
@@ -160,10 +187,9 @@ cmake \
 ```shell
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=On \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_LIB=/usr/lib \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig ..
 ```
 
@@ -248,91 +274,100 @@ dependencies:
 
 - a C++ compilation environment,
 - CMake 3, a cross-platform build system,
-- pip and Conan, package managers for Python and C/C++,
-- Centreon Clib, the Centreon core library.
+- pip, a package manager for Python,
+- Git, the well-known version control system,
+- Conan, a package manager for C/C++,
+- C++ dependencies, coming from Centreon's Conan repository,
+- Centreon Clib, the Centreon C library.
+
+#### Common packages
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-| Software                    | Package name               | Description                                               |
-|-----------------------------|----------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconfig | Mandatory tools to compile                                |
-| CMake                       | cmake3                     | Read the build script and prepare sources for compilation |
-| pip                         | python-pip                 | Package manager for Python                                |
-| Conan                       | conan                      | Package manager for C/C++                                 |
-| Centreon Clib               | centreon-clib-devel        | Core library used by Centreon                             |
-
 <!--CentOS 8-->
 
-| Software                    | Package name                        | Description                                               |
-|-----------------------------|-------------------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
-| CMake                       | cmake                               | Read the build script and prepare sources for compilation |
-| pip                         | python3-pip                         | Package manager for Python                                |
-| Conan                       | conan                               | Package manager for C/C++                                 |
-| Centreon Clib               | centreon-clib-devel                 | Core library used by Centreon                             |
+| Software                    | Package name                        |
+|-----------------------------|-------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config |
+| CMake                       | cmake                               |
+| pip                         | python3-pip                         |
+| Git                         | git                                 |
+| Conan                       | conan                               |
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
-| Software                    | Package name               | Description                                                |
-|-----------------------------|----------------------------|------------------------------------------------------------|
-| C++ compilation environment | build-essential pkg-config | Mandatory tools to compile.                                |
-| CMake                       | cmake                      | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                | Package manager for Python                                 |
-| Conan                       | conan                      | Package manager for C/C++                                  |
-| Centreon Clib               | centreon-clib-devel        | Core library used by Centreon                              |
+| Software                    | Package name               |
+|-----------------------------|----------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconfig |
+| CMake                       | cmake3                     |
+| pip                         | python3-pip                |
+| Git                         | git                        |
+| Conan                       | conan                      |
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+| Software                    | Package name            |
+|-----------------------------|-------------------------|
+| C++ compilation environment | gcc g++ make pkg-config |
+| CMake                       | cmake                   |
+| pip                         | python3-pip             |
+| Git                         | git                     |
+| Conan                       | conan                   |
 
 <!--openSUSE-->
 
-| Software                    | Package name                | Description                                                |
-|-----------------------------|-----------------------------|------------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkg-config | Mandatory tools to compile.                                |
-| CMake                       | cmake                       | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                 | Package manager for Python                                 |
-| Conan                       | conan                       | Package manager for C/C++                                  |
-| Centreon Clib               | centreon-clib-devel         | Core library used by Centreon                              |
+| Software                    | Package name                |
+|-----------------------------|-----------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkg-config |
+| CMake                       | cmake                       |
+| pip                         | python3-pip                 |
+| Git                         | git                         |
+| Conan                       | conan                       |
 
 <!--END_DOCUSAURUS_CODE_TABS-->
-
-#### Common packages
 
 Use the system package manager to install them:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-yum install gcc gcc-c++ make cmake3 pkgconfig python-pip
-```
-
 <!--CentOS 8-->
 
 ```shell
-dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip
+dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip git
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
 ```shell
-apt-get install build-essential cmake pkg-config python3-pip
+yum install gcc gcc-c++ make cmake3 pkgconfig python3-pip git
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+```shell
+apt-get install gcc g++ make cmake pkg-config python3-pip git
 ```
 
 <!--openSUSE-->
 
 ```shell
-zypper install gcc gcc-c++ make cmake pkg-config python3-pip
+zypper install gcc gcc-c++ make cmake pkg-config python3-pip git
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 #### Conan
 
+Upgrade pip to the latest version available:
+
+```shell
+pip3 install --upgrade pip
+```
+
 Install Conan using pip as follow:
 
 ```shell
-pip3 install conan
+pip install conan
 ```
 
 Then add Centreon's Conan repository:
@@ -340,6 +375,8 @@ Then add Centreon's Conan repository:
 ```shell
 conan remote add centreon https://api.bintray.com/conan/centreon/centreon
 ```
+
+The C++ dependencies will be installed in the next chapter.
 
 #### Centreon Clib
 
@@ -387,19 +424,22 @@ Install the C++ dependencies using Conan:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--GCC > 5.0-->
+<!--GCC >= 5.0-->
 
 ```shell
-conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
+conan install --build missing --settings compiler.libcxx=libstdc++11 ..
 ```
 
 <!--GCC < 5.0-->
 
 ```shell
-conan install --remote centreon --build missing ..
+conan install --build missing --settings compiler.libcxx=libstdc++ ..
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
+
+> You might need to add *--remote centreon* option if unfound packages
+> errors are raised.
 
 > All the dependencies pulled by Conan are located in conanfile.txt. If
 > you want to use a dependency from your package manager instead of Conan,
@@ -411,29 +451,6 @@ environment.
 Recommended command for your distribution:
 
 <!--DOCUSAURUS_CODE_TABS-->
-
-<!--CentOS 7-->
-
-```shell
-cmake \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=Off \
-    -DWITH_CREATE_FILES=On \
-    -DWITH_GROUP=centreon-engine \
-    -DWITH_LOGROTATE_SCRIPT=On \
-    -DWITH_PKGCONFIG_SCRIPT=On \
-    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
-    -DWITH_PREFIX=/usr \
-    -DWITH_PREFIX_BIN=/usr/sbin \
-    -DWITH_PREFIX_CONF=/etc/centreon-engine \
-    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
-    -DWITH_SAMPLE_CONFIG=Off \
-    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
-    -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
-    -DWITH_USER=centreon-engine \
-    -DWITH_VAR_DIR=/var/log/centreon-engine ..
-```
 
 <!--CentOS 8-->
 
@@ -453,12 +470,35 @@ cmake \
     -DWITH_SAMPLE_CONFIG=Off \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-engine \
     -DWITH_VAR_DIR=/var/log/centreon-engine ..
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
+
+```shell
+cmake3 \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=Off \
+    -DWITH_CREATE_FILES=On \
+    -DWITH_GROUP=centreon-engine \
+    -DWITH_LOGROTATE_SCRIPT=On \
+    -DWITH_PKGCONFIG_SCRIPT=On \
+    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BIN=/usr/sbin \
+    -DWITH_PREFIX_CONF=/etc/centreon-engine \
+    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
+    -DWITH_SAMPLE_CONFIG=Off \
+    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
+    -DWITH_STARTUP_SCRIPT=systemd \
+    -DWITH_TESTING=Off \
+    -DWITH_USER=centreon-engine \
+    -DWITH_VAR_DIR=/var/log/centreon-engine ..
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
 ```shell
 cmake \
@@ -476,7 +516,7 @@ cmake \
     -DWITH_SAMPLE_CONFIG=Off \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-engine \
     -DWITH_VAR_DIR=/var/log/centreon-engine ..
 ```
@@ -499,7 +539,7 @@ cmake \
     -DWITH_SAMPLE_CONFIG=Off \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-engine \
     -DWITH_VAR_DIR=/var/log/centreon-engine ..
 ```
@@ -619,111 +659,125 @@ dependencies:
 
 - a C++ compilation environment,
 - CMake 3, a cross-platform build system,
-- pip and Conan, package managers for Python and C/C++,
-- MariaDB **(>= 10.3)** development files (for the SQL module),
+- pip, a package manager for Python,
+- Git, the well-known version control system,
+- Conan, a package manager for C/C++,
+- C++ dependencies, coming from Centreon's Conan repository,
+- MariaDB Connector development files (for the SQL module),
 - RRDTool development files (for the RRD module),
 - Lua development files (for the LUA module),
 - GnuTLS **(>= 3.3.29)** development files, a secure communications library,
 - Libgcrypt development files, a cryptographic library.
 
+#### Common packages
+
 <!--DOCUSAURUS_CODE_TABS-->
-
-<!--CentOS 7-->
-
-| Software                    | Package name                 | Description                                               |
-|-----------------------------|------------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconfig   | Mandatory tools to compile                                |
-| CMake                       | cmake3                       | Read the build script and prepare sources for compilation |
-| pip                         | python-pip                   | Package manager for Python                                |
-| Conan                       | conan                        | Package manager for C/C++                                 |
-| MariaDB                     | MariaDB-devel                | MariaDB development files                                 |
-| RRDTool                     | rrdtool-devel                | RRDTool development files                                 |
-| Lua                         | lua-devel                    | LUA development files                                     |
-| GnuTLS                      | gnutls-devel                 | GnuTLS development files                                  |
-| Libgcrypt                   | libgcrypt-devel              | Libgcrypt development files                               |
 
 <!--CentOS 8-->
 
-| Software                    | Package name                        | Description                                               |
-|-----------------------------|-------------------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
-| CMake                       | cmake                               | Read the build script and prepare sources for compilation |
-| pip                         | python3-pip                         | Package manager for Python                                |
-| Conan                       | conan                               | Package manager for C/C++                                 |
-| MariaDB                     | MariaDB-devel                       | MariaDB development files                                 |
-| RRDTool                     | rrdtool-devel                       | RRDTool development files                                 |
-| Lua                         | lua-devel                           | LUA development files                                     |
-| GnuTLS                      | gnutls-devel                        | GnuTLS development files                                  |
-| Libgcrypt                   | libgcrypt-devel                     | Libgcrypt development files                               |
+| Software                    | Package name                        |
+|-----------------------------|-------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config |
+| CMake                       | cmake                               |
+| pip                         | python3-pip                         |
+| Git                         | git                                 |
+| Conan                       | conan                               |
+| MariaDB Connector           | mariadb-devel                       |
+| RRDTool                     | rrdtool-devel                       |
+| Lua                         | lua-devel                           |
+| GnuTLS                      | gnutls-devel                        |
+| Libgcrypt                   | libgcrypt-devel                     |
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
-| Software                    | Package name                            | Description                                                |
-|-----------------------------|-----------------------------------------|------------------------------------------------------------|
-| C++ compilation environment | build-essential pkg-config              | Mandatory tools to compile.                                |
-| CMake                       | cmake                                   | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                             | Package manager for Python                                 |
-| Conan                       | conan                                   | Package manager for C/C++                                  |
-| MariaDB                     | libmariadb-dev                          | MariaDB development files                                  |
-| RRDTool                     | librrd-dev                              | RRDTool development files                                  |
-| Lua                         | liblua5.3-dev (liblua5.2-dev on Jessie) | LUA development files                                      |
-| GnuTLS                      | libgnutls28-dev                         | GnuTLS development files                                   |
-| Libgcrypt                   | libgcrypt20-dev                         | Libgcrypt development files                                |
+| Software                    | Package name                 |
+|-----------------------------|------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconfig   |
+| CMake                       | cmake3                       |
+| pip                         | python3-pip                  |
+| Git                         | git                          |
+| Conan                       | conan                        |
+| MariaDB Connector           | mariadb-devel                |
+| RRDTool                     | rrdtool-devel                |
+| Lua                         | lua-devel                    |
+| GnuTLS                      | gnutls-devel                 |
+| Libgcrypt                   | libgcrypt-devel              |
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+| Software                    | Package name                            |
+|-----------------------------|-----------------------------------------|
+| C++ compilation environment | gcc g++ make pkg-config                 |
+| CMake                       | cmake                                   |
+| pip                         | python3-pip                             |
+| Git                         | git                                     |
+| Conan                       | conan                                   |
+| MariaDB Connector           | libmariadb-dev                          |
+| RRDTool                     | librrd-dev                              |
+| Lua                         | liblua5.3-dev (liblua5.2-dev on Jessie) |
+| GnuTLS                      | libgnutls28-dev                         |
+| Libgcrypt                   | libgcrypt20-dev                         |
 
 <!--openSUSE-->
 
-| Software                    | Package name                 | Description                                                |
-|-----------------------------|------------------------------|------------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkg-config  | Mandatory tools to compile.                                |
-| CMake                       | cmake                        | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                  | Package manager for Python                                 |
-| Conan                       | conan                        | Package manager for C/C++                                  |
-| MariaDB                     | MariaDB-devel                | MariaDB development files                                  |
-| RRDTool                     | rrdtool-devel                | RRDTool development files                                  |
-| Lua                         | lua-devel                    | LUA development files                                      |
-| GnuTLS                      | libgnutls-devel              | GnuTLS development files                                   |
-| Libgcrypt                   | libgcrypt-devel              | Libgcrypt development files                                |
+| Software                    | Package name                 |
+|-----------------------------|------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkg-config  |
+| CMake                       | cmake                        |
+| pip                         | python3-pip                  |
+| Git                         | git                          |
+| Conan                       | conan                        |
+| MariaDB Connector           | libmariadb-devel             |
+| RRDTool                     | rrdtool-devel                |
+| Lua                         | lua-devel                    |
+| GnuTLS                      | libgnutls-devel              |
+| Libgcrypt                   | libgcrypt-devel              |
 
 <!--END_DOCUSAURUS_CODE_TABS-->
-
-#### Common packages
 
 Use the system package manager to install them:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-yum install gcc gcc-c++ make cmake3 pkgconfig python-pip MariaDB-devel rrdtool-devel lua-devel gnutls-devel libgcrypt-devel
-```
-
 <!--CentOS 8-->
 
 ```shell
-dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip MariaDB-devel rrdtool-devel lua-devel gnutls-devel libgcrypt-devel
+dnf config-manager --set-enabled powertools
+dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip git mariadb-devel rrdtool-devel lua-devel gnutls-devel libgcrypt-devel
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
 ```shell
-apt-get install build-essential cmake pkg-config python3-pip libmariadb-dev librrd-dev liblua5.3-dev libgnutls28-dev libgcrypt20-dev
+yum install gcc gcc-c++ make cmake3 pkgconfig python3-pip git mariadb-devel rrdtool-devel lua-devel gnutls-devel libgcrypt-devel
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+```shell
+apt-get install gcc g++ make cmake pkg-config python3-pip git libmariadb-dev librrd-dev liblua5.3-dev libgnutls28-dev libgcrypt20-dev
 ```
 
 <!--openSUSE-->
 
 ```shell
-zypper install gcc gcc-c++ make cmake pkg-config python3-pip MariaDB-devel rrdtool-devel lua-devel libgnutls-devel libgcrypt-devel
+zypper install gcc gcc-c++ make cmake pkg-config python3-pip git libmariadb-devel rrdtool-devel lua-devel libgnutls-devel libgcrypt-devel
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 #### Conan
 
+Upgrade pip to the latest version available:
+
+```shell
+pip3 install --upgrade pip
+```
+
 Install Conan using pip as follow:
 
 ```shell
-pip3 install conan
+pip install conan
 ```
 
 Then add Centreon's Conan repository:
@@ -731,6 +785,8 @@ Then add Centreon's Conan repository:
 ```shell
 conan remote add centreon https://api.bintray.com/conan/centreon/centreon
 ```
+
+The C++ dependencies will be installed in the next chapter.
 
 ### Build
 
@@ -774,16 +830,16 @@ Install the C++ dependencies using Conan:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--GCC > 5.0-->
+<!--GCC >= 5.0-->
 
 ```shell
-conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
+conan install --build missing --settings compiler.libcxx=libstdc++11 ..
 ```
 
 <!--GCC < 5.0-->
 
 ```shell
-conan install --remote centreon --build missing ..
+conan install --build missing --settings compiler.libcxx=libstdc++ ..
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -799,7 +855,7 @@ Recommended command for your distribution:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
+<!--CentOS 8-->
 
 ```shell
 cmake \
@@ -816,11 +872,32 @@ cmake \
     -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-broker ..
 ```
 
-<!--CentOS 8-->
+<!--CentOS 7-->
+
+```shell
+cmake3 \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_CXX11_ABI=Off \
+    -DWITH_CONFIG_FILES=On \
+    -DWITH_DAEMONS='central-rrd;central-broker' \
+    -DWITH_GROUP=centreon-broker \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BIN=/usr/sbin \
+    -DWITH_PREFIX_CONF=/etc/centreon-broker \
+    -DWITH_PREFIX_MODULES=/usr/share/centreon/lib/centreon-broker \
+    -DWITH_PREFIX_LIB=/usr/lib/centreon-broker \
+    -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
+    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
+    -DWITH_STARTUP_SCRIPT=systemd \
+    -DWITH_TESTING=Off \
+    -DWITH_USER=centreon-broker ..
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
 ```shell
 cmake \
@@ -837,28 +914,7 @@ cmake \
     -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
-    -DWITH_USER=centreon-broker ..
-```
-
-<!--Debian / Raspbian-->
-
-```shell
-cmake \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CXX11_ABI=On \
-    -DWITH_CONFIG_FILES=On \
-    -DWITH_DAEMONS='central-rrd;central-broker' \
-    -DWITH_GROUP=centreon-broker \
-    -DWITH_PREFIX=/usr \
-    -DWITH_PREFIX_BIN=/usr/sbin \
-    -DWITH_PREFIX_CONF=/etc/centreon-broker \
-    -DWITH_PREFIX_MODULES=/usr/share/centreon/lib/centreon-broker \
-    -DWITH_PREFIX_LIB=/usr/lib/centreon-broker \
-    -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
-    -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
-    -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-broker ..
 ```
 
@@ -879,7 +935,7 @@ cmake \
     -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
     -DWITH_STARTUP_DIR=/usr/lib/systemd/system/ \
     -DWITH_STARTUP_SCRIPT=systemd \
-    -DWITH_TESTING=On \
+    -DWITH_TESTING=Off \
     -DWITH_USER=centreon-broker ..
 ```
 
@@ -998,102 +1054,116 @@ external dependencies:
 
 - a C++ compilation environment,
 - CMake 3, a cross-platform build system,
-- pip and Conan, package managers for Python and C/C++,
+- pip, a package manager for Python,
+- Git, the well-known version control system,
+- Conan, a package manager for C/C++,
+- C++ dependencies, coming from Centreon's Conan repository,
 - Perl, the Perl interpreter and core modules,
 - SSH2 development files, to use SSH functions,
 - Libgcrypt development files, a cryptographic library.
-- Centreon Clib, the Centreon core library.
+- Centreon Clib, the Centreon C library.
+
+#### Common packages
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-| Software                    | Package name               | Description                                               |
-|-----------------------------|----------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconfig | Mandatory tools to compile                                |
-| CMake                       | cmake3                     | Read the build script and prepare sources for compilation |
-| pip                         | python-pip                 | Package manager for Python                                |
-| Conan                       | conan                      | Package manager for C/C++                                 |
-| Perl                        | perl                       | Perl interpreter and core modules                         |
-| SSH2                        | libssh2-devel              | SSH2 library development files                            |
-| Libgcrypt                   | libgcrypt-devel            | Libgcrypt development files                               |
-
 <!--CentOS 8-->
 
-| Software                    | Package name                        | Description                                               |
-|-----------------------------|-------------------------------------|-----------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config | Mandatory tools to compile                                |
-| CMake                       | cmake                               | Read the build script and prepare sources for compilation |
-| pip                         | python3-pip                         | Package manager for Python                                |
-| Conan                       | conan                               | Package manager for C/C++                                 |
-| Perl                        | perl                                | Perl interpreter and core modules                         |
-| SSH2                        | libssh2-devel                       | SSH2 library development files                            |
-| Libgcrypt                   | libgcrypt-devel                     | Libgcrypt development files                               |
+| Software                    | Package name                        |
+|-----------------------------|-------------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconf-pkg-config |
+| CMake                       | cmake                               |
+| pip                         | python3-pip                         |
+| Git                         | git                                 |
+| Conan                       | conan                               |
+| Perl                        | perl                                |
+| SSH2                        | libssh2-devel                       |
+| Libgcrypt                   | libgcrypt-devel                     |
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
-| Software                    | Package name               | Description                                                |
-|-----------------------------|----------------------------|------------------------------------------------------------|
-| C++ compilation environment | build-essential pkg-config | Mandatory tools to compile.                                |
-| CMake                       | cmake                      | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                | Package manager for Python                                 |
-| Conan                       | conan                      | Package manager for C/C++                                  |
-| Perl                        | libperl-dev                | Perl development files                                     |
-| SSH2                        | libssh2-1-dev              | SSH2 library development files                             |
-| Libgcrypt                   | libgcrypt-dev              | Libgcrypt development files                                |
+| Software                    | Package name               |
+|-----------------------------|----------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkgconfig |
+| CMake                       | cmake3                     |
+| pip                         | python3-pip                |
+| Git                         | git                        |
+| Conan                       | conan                      |
+| Perl                        | perl                       |
+| SSH2                        | libssh2-devel              |
+| Libgcrypt                   | libgcrypt-devel            |
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+| Software                    | Package name               |
+|-----------------------------|----------------------------|
+| C++ compilation environment | gcc g++ make pkg-config    |
+| CMake                       | cmake                      |
+| pip                         | python3-pip                |
+| Git                         | git                        |
+| Conan                       | conan                      |
+| Perl                        | libperl-dev                |
+| SSH2                        | libssh2-1-dev              |
+| Libgcrypt                   | libgcrypt-dev              |
 
 <!--openSUSE-->
 
-| Software                    | Package name                 | Description                                                |
-|-----------------------------|------------------------------|------------------------------------------------------------|
-| C++ compilation environment | gcc gcc-c++ make pkg-config  | Mandatory tools to compile.                                |
-| CMake                       | cmake                        | Read the build script and prepare sources for compilation. |
-| pip                         | python3-pip                  | Package manager for Python                                 |
-| Conan                       | conan                        | Package manager for C/C++                                  |
-| Perl                        | perl                         | Perl interpreter and core modules                          |
-| SSH2                        | libssh2-devel                | SSH2 library development files                             |
-| Libgcrypt                   | libgcrypt-devel              | Libgcrypt development files                                |
+| Software                    | Package name                 |
+|-----------------------------|------------------------------|
+| C++ compilation environment | gcc gcc-c++ make pkg-config  |
+| CMake                       | cmake                        |
+| pip                         | python3-pip                  |
+| Git                         | git                          |
+| Conan                       | conan                        |
+| Perl                        | perl                         |
+| SSH2                        | libssh2-devel                |
+| Libgcrypt                   | libgcrypt-devel              |
 
 <!--END_DOCUSAURUS_CODE_TABS-->
-
-#### Common packages
 
 Use the system package manager to install them:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-yum install gcc gcc-c++ make cmake3 pkgconfig python-pip perl libssh2-devel libgcrypt-devel
-```
-
 <!--CentOS 8-->
 
 ```shell
-dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip perl libssh2-devel libgcrypt-devel
+dnf install epel-release
+dnf install gcc gcc-c++ make cmake pkgconf-pkg-config python3-pip git perl-devel perl-ExtUtils-Embed libssh2-devel libgcrypt-devel
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
 
 ```shell
-apt-get install build-essential cmake pkg-config python3-pip libperl-dev libssh2-1-dev libgcrypt-dev
+yum install gcc gcc-c++ make cmake3 pkgconfig python3-pip git perl-devel perl-ExtUtils-Embed libssh2-devel libgcrypt-devel
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
+
+```shell
+apt-get install gcc g++ make cmake pkg-config python3-pip git libperl-dev libssh2-1-dev libgcrypt-dev
 ```
 
 <!--openSUSE-->
 
 ```shell
-zypper install gcc gcc-c++ make cmake pkg-config python3-pip perl libssh2-devel libgcrypt-devel
+zypper install gcc gcc-c++ make cmake pkg-config python3-pip git perl libssh2-devel libgcrypt-devel
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 #### Conan
 
+Upgrade pip to the latest version available:
+
+```shell
+pip3 install --upgrade pip
+```
+
 Install Conan using pip as follow:
 
 ```shell
-pip3 install conan
+pip install conan
 ```
 
 Then add Centreon's Conan repository:
@@ -1101,6 +1171,8 @@ Then add Centreon's Conan repository:
 ```shell
 conan remote add centreon https://api.bintray.com/conan/centreon/centreon
 ```
+
+The C++ dependencies will be installed in the next chapter.
 
 #### Centreon Clib
 
@@ -1148,16 +1220,16 @@ Install the C++ dependencies using Conan:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--GCC > 5.0-->
+<!--GCC >= 5.0-->
 
 ```shell
-conan install --remote centreon --build missing -s compiler.libcxx=libstdc++11 ..
+conan install --build missing --settings compiler.libcxx=libstdc++11 ..
 ```
 
 <!--GCC < 5.0-->
 
 ```shell
-conan install --remote centreon --build missing ..
+conan install --build missing --settings compiler.libcxx=libstdc++ ..
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -1173,31 +1245,31 @@ Recommended command for your distribution:
 
 <!--DOCUSAURUS_CODE_TABS-->
 
-<!--CentOS 7-->
-
-```shell
-cmake \
-    -DWITH_PREFIX=/usr \
-    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
-    -DWITH_TESTING=On ..
-```
-
 <!--CentOS 8-->
 
 ```shell
 cmake \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
-    -DWITH_TESTING=On ..
+    -DWITH_TESTING=Off ..
 ```
 
-<!--Debian / Raspbian-->
+<!--CentOS 7-->
+
+```shell
+cmake3 \
+    -DWITH_PREFIX=/usr \
+    -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
+    -DWITH_TESTING=Off ..
+```
+
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
 ```shell
 cmake \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
-    -DWITH_TESTING=On ..
+    -DWITH_TESTING=Off ..
 ```
 
 <!--openSUSE-->
@@ -1206,7 +1278,7 @@ cmake \
 cmake \
     -DWITH_PREFIX=/usr \
     -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
-    -DWITH_TESTING=On ..
+    -DWITH_TESTING=Off ..
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -1283,31 +1355,31 @@ dependencies:
 
 <!--CentOS 7-->
 
-| Software  | Package name                                                                                                               | Description                       |
-|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
-| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+| Software  | Package name                                                                                                               |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|
+| Perl      | perl                                                                                                                       |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg |
 
 <!--CentOS 8-->
 
-| Software  | Package name                                                                                                                                                                                                                          | Description                       |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Perl      | perl                                                                                                                                                                                                                                  | Perl interpreter and core modules |
-| Libraries | libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl | Perl libraries                    |
+| Software  | Package name                                                                                                                                                                                                                          |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Perl      | perl                                                                                                                                                                                                                                  |
+| Libraries | libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl |
 
-<!--Debian / Raspbian-->
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
-| Software  | Package name                                                                                                               | Description                       |
-|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
-| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+| Software  | Package name                                                                                                               |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|
+| Perl      | perl                                                                                                                       |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg |
 
 <!--openSUSE-->
 
-| Software  | Package name                                                                                                               | Description                       |
-|-----------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Perl      | perl                                                                                                                       | Perl interpreter and core modules |
-| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg | Perl libraries                    |
+| Software  | Package name                                                                                                               |
+|-----------|----------------------------------------------------------------------------------------------------------------------------|
+| Perl      | perl                                                                                                                       |
+| Libraries | perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg |
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
@@ -1327,16 +1399,16 @@ yum install perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-
 dnf install perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg
 ```
 
-<!--Debian / Raspbian-->
+<!--Debian / Raspberry Pi OS / Ubuntu-->
 
 ```shell
-apt-get perl libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl
+apt-get install perl libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libnet-ldap-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl libdatetime-perl liburi-encode-perl libdate-manip-perl
 ```
 
 <!--openSUSE-->
 
 ```shell
-zypper perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-MySQL perl-DBD-Pg
+zypper install perl perl-XML-LibXML perl-JSON perl-libwww-perl perl-XML-XPath perl-Net-Telnet perl-Net-DNS perl-DBI perl-DBD-mysql perl-DBD-Pg
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -1372,7 +1444,7 @@ With YYYYMMDD being the version you want to use.
 Move the downloaded project to the final plugins folder:
 
 ```shell
-mkdir /usr/lib/centreon/plugins/
-mv /path_to_centreon_plugins/* /usr/lib/centreon/plugins/
+mkdir -p /usr/lib/centreon/plugins/
+cp /path_to_centreon_plugins/* /usr/lib/centreon/plugins/
 chmod +x /usr/lib/centreon/plugins/*
 ```
